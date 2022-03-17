@@ -1,0 +1,23 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>首页</title>
+</head>
+<body>
+<button id="case:youdao" onclick="getCase(this)" style="display: none;">点击</button>
+<script>
+    function getCase(dom) {
+        window.top.postMessage(dom.id, "*")
+    }
+
+    window.addEventListener('message', function (event) {
+        const token = event.data
+        if (token) {
+            console.log(token);
+            document.getElementById('case:youdao').style.display = 'block';
+        }
+    }, false);
+</script>
+</body>
+</html>

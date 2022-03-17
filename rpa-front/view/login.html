@@ -1,0 +1,45 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>登录</title>
+</head>
+<body>
+<div id="loginDiv" style="display: none;">
+    <input type="text" value="用户名">
+    <input type="password" value="密码">
+    <button onclick="login()">提交</button>
+</div>
+<script>
+    const {ipcRenderer} = require('electron')
+    const http = require('http')
+    let remoteUrl
+
+    ipcRenderer.on('auth', (event, auth) => {
+        remoteUrl = auth.url
+        document.getElementById('loginDiv').style.display = 'block'
+    })
+
+    function login() {
+        const options = {
+            hostname: remoteUrl.split(":")[0],
+            port: remoteUrl.split(":")[1],
+            path: '/user/login',
+            method: 'POST',
+            headers: {
+                'Content-type': 'applications/json;charset=UTF-8'
+            }
+        }
+        const response = http.request(options, function (response) {
+            response.on('data', function (data) {
+                const result = JSON.parse(data.toString())
+                if (result.state) {
+                    ipcRenderer.send('login', result.obj)
+                }
+            })
+        })
+        response.end()
+    }
+</script>
+</body>
+</html>
